@@ -1,0 +1,276 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Google</title>
+  <link id="favicon" rel="icon" href="https://google.com" />
+
+
+  <script>
+    (function () {
+      const params = new URLSearchParams(window.location.search);
+
+
+      // If opened from Ctrl+H history (?redirect=1), bounce straight to Google
+      if (params.get("redirect") === "1") {
+        window.location.replace("https://google.com");
+        return;
+      }
+
+
+      // Tag the URL in browser history so future Ctrl+H clicks trigger the redirect
+      if (window.location.protocol.startsWith("http")) {
+        const taggedUrl = window.location.pathname + "?redirect=1";
+        window.history.replaceState(null, "", taggedUrl);
+      }
+    })();
+  </script>
+
+
+  <style>
+    :root {
+      --bg: #ffffff;
+      --card: #ffffff;
+      --border: #dfe1e5;
+      --text: #202124;
+      --muted: #5f6368;
+      --accent: #1a73e8;
+      --accent-hover: #1557b0;
+    }
+
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: arial, sans-serif;
+    }
+
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+
+    .container {
+      background: var(--card);
+      width: 100%;
+      max-width: 500px;
+      padding: 24px;
+      text-align: center;
+    }
+
+
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+
+    .logo img {
+      width: 32px;
+      height: 32px;
+    }
+
+
+    .logo span {
+      font-size: 2.2rem;
+      font-weight: 500;
+      letter-spacing: -0.5px;
+      color: #202124;
+    }
+
+
+    .search-box {
+      width: 100%;
+      padding: 13px 18px;
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--text);
+      font-size: 1rem;
+      outline: none;
+      margin-bottom: 18px;
+      transition: box-shadow 0.2s, border-color 0.2s;
+    }
+
+
+    .search-box:hover,
+    .search-box:focus {
+      box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
+      border-color: rgba(223, 225, 229, 0);
+    }
+
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+
+    .checkbox-row input {
+      width: 15px;
+      height: 15px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+
+    button {
+      background-color: #f8f9fa;
+      border: 1px solid #f8f9fa;
+      border-radius: 4px;
+      color: #3c4043;
+      font-size: 14px;
+      padding: 10px 18px;
+      cursor: pointer;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+
+    button:hover {
+      box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+      background-color: #f8f9fa;
+      border: 1px solid #dadce0;
+      color: #202124;
+    }
+
+
+    .note {
+      margin-top: 22px;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+
+
+  <div class="container">
+    <div class="logo">
+      <img src="https://google.com" alt="Google" />
+      <span>Google</span>
+    </div>
+
+
+    <input
+      type="text"
+      id="targetUrl"
+      class="search-box"
+      placeholder="Enter URL to open in Google-cloaked window..."
+      onkeydown="if(event.key==='Enter') launchBlank()"
+    />
+
+
+    <label class="checkbox-row">
+      <input type="checkbox" id="autoRedirect" checked />
+      Send this tab to Google after opening
+    </label>
+
+
+    <div class="buttons">
+      <button onclick="launchBlank()">Open Cloaked Window</button>
+      <button onclick="window.location.replace('https://google.com')">Go to Google</button>
+    </div>
+
+
+    <p class="note">
+      Cloaked as <strong>Google</strong> &bull; Press <code>Enter</code> to launch or <code>Esc</code> to exit.
+    </p>
+  </div>
+
+
+  <script>
+    const GOOGLE_TITLE = "Google";
+    const GOOGLE_ICON = "https://google.com";
+
+
+    function formatUrl(url) {
+      url = url.trim();
+      if (!url) return '';
+      if (!/^https?:\/\//i.test(url)) {
+        url = 'https://' + url;
+      }
+      return url;
+    }
+
+
+    function launchBlank() {
+      const rawUrl = document.getElementById('targetUrl').value;
+      const url = formatUrl(rawUrl);
+      if (!url) {
+        alert('Please enter a valid URL first.');
+        return;
+      }
+
+
+      const shouldRedirect = document.getElementById('autoRedirect').checked;
+
+
+      const win = window.open('about:blank', '_blank');
+      if (!win) {
+        alert('Pop-up blocked! Please allow pop-ups for this page.');
+        return;
+      }
+
+
+      const doc = win.document;
+      doc.open();
+      doc.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>${GOOGLE_TITLE}</title>
+          <link rel="icon" href="${GOOGLE_ICON}" />
+          <style>
+            html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
+            iframe { width: 100%; height: 100%; border: none; }
+          </style>
+        </head>
+        <body>
+          <iframe src="${url.replace(/"/g, '&quot;')}" allowfullscreen></iframe>
+        </body>
+        </html>
+      `);
+      doc.close();
+
+
+      if (shouldRedirect) {
+        window.location.replace('https://google.com');
+      }
+    }
+
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        window.location.replace('https://google.com');
+      }
+    });
+  </script>
+
+
+</body>
+</html>
